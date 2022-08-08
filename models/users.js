@@ -1,7 +1,6 @@
 'use strict';
-const {
-  Model
-} = require('sequelize');
+const bcrypt = require('bcrypt');
+const { Model } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Users extends Model {
     /**
@@ -13,13 +12,31 @@ module.exports = (sequelize, DataTypes) => {
       // define association here
     }
   }
-  Users.init({
-    name: DataTypes.STRING,
-    role: DataTypes.ENUM('manager', 'seller', 'cashier'),
-    active: DataTypes.BOOLEAN
-  }, {
-    sequelize,
-    modelName: 'Users',
+  Users.init(
+    {
+      name: DataTypes.STRING,
+      role: DataTypes.ENUM('manager', 'seller', 'cashier'),
+      active: DataTypes.BOOLEAN,
+      login: DataTypes.STRING,
+      senha: DataTypes.STRING,
+    },
+    {
+      sequelize,
+      modelName: 'Users',
+    },
+  );
+
+  Users.beforeCreate(async (user, options) => {
+    const hash = await bcrypt.hash(user.senha, 12);
+    user.senha = hash;
   });
+
+  Users.beforeUpdate(async (user, options) => {
+    if (user.changed('senha')) {
+      const hash = await bcrypt.hash(user.senha, 12);
+      user.senha = hash;
+    }
+  });
+
   return Users;
 };

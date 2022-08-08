@@ -42,6 +42,7 @@ class UserController {
         where: {
           id: Number(id),
         },
+        individualHooks: true,
       });
       const user = await db.Users.findOne({
         where: {
