@@ -1,7 +1,7 @@
 const db = require('../models');
 
 class UserController {
-  static findAll = async (req, res) => {
+  static findAll = async (req, res, next) => {
     try {
       const users = await db.Users.findAll();
       return res.status(200).json(users);
@@ -70,6 +70,10 @@ class UserController {
       return res.status(500).json(error.message);
     }
   };
+
+  static login = async (req, res) => {
+    res.send("Autenticado")
+  }
 }
 
 module.exports = UserController;
